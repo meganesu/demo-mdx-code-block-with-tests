@@ -2,7 +2,8 @@ import React from "react"
 import { render, screen } from "@testing-library/react"
 
 import * as runtime from 'react/jsx-runtime'
-import { evaluate } from "@mdx-js/mdx"
+import { evaluate } from "../../../vendor/mdx"
+import remarkMdxCodeMeta from '../../../vendor/remark-mdx-code-meta';
 
 import CodeBlock from "."
 
@@ -14,10 +15,16 @@ describe('CodeBlock component', () => {
       \`\`\`
     `
 
-    const MdxContent = await evaluate(
+    const mdxModule = await evaluate(
       mdFencedCodeBlock,
-      { ...runtime, development: false },
-    ).default
+      {
+        ...runtime,
+        development: false,
+        remarkPlugins: [remarkMdxCodeMeta],
+      }
+    )
+
+    const MdxContent = mdxModule.default
 
     render(
       <MdxContent components={{pre: CodeBlock}} />
